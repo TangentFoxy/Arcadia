@@ -1,0 +1,64 @@
+create (make, build)               create
+note (describe, pass?)             mod props
+enter       [type of warp]
+leave (exit)[type of warp]
+transform (transmute)              mod props
+take (grab) [type of warp]
+drop        [type of warp]
+inventory          [type of look?]
+look (examine?)                         view
+program (automate)     [type of usage]  mod props
+use (run?)                              run code!
+usage (trigger?)                   mod props
+become                             console (mod props)
+inspect (examine?) [type of look?] view prop
+warp                               move
+move        [type of warp]
+learn (help)                       console? view props?
+
+don't forget cast!
+
+THIS IS MORE COMPLEX THAN INITIALLY ANTICIPATED.
+IMPLEMENT BASE STRUCTURE IN LUA FIRST.
+  THEN CONSIDER IMPLEMENTING VESSEL-BASED MODIFICATION.
+
+brackets = some combo may exist
+[vessel] = [article] [attribute] [name]
+[to] = to, into, in
+[article] = the, a, an
+[attribute], [name] = string
+[at] = at, in
+[about] = about, to, with
+
+create [vessel]
+  (def id (next)) # need to save what the next id will be, else this will attempt to create two new vessels
+  (def vessel:id:name (name)) # create the vessel by specifying its name
+  (if (attribute) (def vessel:id:attribute (attribute))) # add the attribute if it is defined
+                                                         # without having copied id first, this would attempt to create an unnamed vessel, not allowed!
+note [string] (spaces allowed)
+  (def parent:note (string)) # parent is the parent of the calling vessel
+enter [vessel]
+  (def parent (vessel)) # NOT guest:parent, because we need the caller, not guest
+leave
+  (def parent (parent:parent)) # leaving is going to our parents' parent
+transform [vessel] into [vessel] # TODO
+take [vessel]
+  (def vessel:(vessel):parent (id)) # id is current id
+drop [vessel]
+  (def vessel:(vessel):parent (parent))
+inventory # TODO
+look [at] [vessel] # TODO
+program [vessel] [string] (spaces allowed)
+  (def vessel:(vessel):program (string))
+use [vessel]
+  (call (vessel:(vessel):program))
+trigger [string] (no spaces)
+  (def parent:trigger (string))
+become [vessel]
+  (def vessel:-1:note (vessel:id))
+inspect [vessel] # TODO
+learn [about] [string] (no spaces) # TODO (I'm thinking just display notes on each of the main ones, for others maybe if a 'learn-[topic]' exists?)
+warp [vessel] [to] [vessel2]
+  (def vessel:(vessel):parent (vessel2:id))
+move [vessel] [to] [vessel2]
+  (def vessel:(vessel):parent (vessel2:id))

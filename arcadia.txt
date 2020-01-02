@@ -1,0 +1,74 @@
+create (make, build)               create
+note (describe, pass?)             mod props
+enter       [type of warp]
+leave (exit)[type of warp]
+transform (transmute)              mod props
+take (grab) [type of warp]
+drop        [type of warp]
+inventory          [type of look?]
+look (examine?)                         view
+program (automate)     [type of usage]  mod props
+use (run?)                              run code!
+usage (trigger?)                   mod props
+become                             console (mod props)
+inspect (examine?) [type of look?] view prop
+warp                               move
+move        [type of warp]
+learn (help)                       console? view props?
+----
+what if the core actions were themselves vessels? where is the base things are
+built from?
+remember, things don't have to exist inside other things.. put console programs
+  in a special console vessel? :3 the vessel you are could even be stored as a
+  special vessel! (its description == id of your vessel)
+"[you are] a force acting upon [vessels] - moving around and into your other selves"
+(I want more of a sense of things happening without you, with passives this is
+ possible!)
+----
+API gives: create, modify, view, move
+true API: global: create(data), get(vessel)
+           vessel.prop = val (to modify and move)
+           print(vessel.prop) to view
+now the API is only accessible to vessel code @(), the console is vessel 0,
+  which allows you to interact with the programmed vessels inside of it, as well
+  as simpler programs
+when the api returns a vessel, it is actually returning a wrapper to a vessel,
+  so that underlying features are resolved appropriately
+----
+vessels = {
+  [id]: {
+    id: #           -- integer id, matches its place in the vessels hashmap
+    name: ""        -- no spaces
+    attribute: ""   -- no spaces
+    note: ""        -- can contain any text (is not executed)
+    parent: #       -- integer id (must exist, can be self)
+    program: ""     -- can contain any text (is executed)
+    passive: ""     -- can contain any text (is executed)
+    trigger: ""     -- no spaces
+  }
+}
+children = {
+  [id]: {array}     -- key is parent, array of child vessel ids is the value
+}
+vessels is a hashmap, #vessels + 1 is the "next available id" as vessels should
+  not be deleted (if one is deleted, this function will still work, but order
+  will not be consistent with history)
+original idea included owners table, permissions table, and creator was a
+  static string instead of a vessel id
+note for saving: ids don't need to be saved inside themselves, this should be
+  fixed on load, additionally the children index should be built on load (not
+  saved!) posessed doesn't need to be saved separately, since it is part of the
+  console vessel
+also notice that because the entire interface runs through vessels[0], a game
+  area can be built within where the entire interface changes by replacing the
+  contents of vessels[0]
+----
+I hadn't considered this before with Paradise: passive notes are executed after
+every action, this means more complex mechanics are possible without interfering
+with the console. That said, I really like the idea of the console being a
+vessel and thin layer over a simple API at the core.
+
+Should the console still exist as a vessel? I think yes. But this is only to be
+trifled with for advanced users and you can break your world. There's nothing in
+this architecture preventing negative ids from existing.. ;) Console's parts can
+be negatively indexed.

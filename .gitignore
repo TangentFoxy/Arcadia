@@ -1,0 +1,4 @@
+*.lua
+logs/
+*_temp/
+nginx.conf.compiled

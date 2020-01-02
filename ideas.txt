@@ -1,0 +1,51 @@
+Signal lost
+Parallel worlds
+Moving fortress
+      Running out of power
+You are alone
+Start with nothing
+Machines
+Running out of space
+On / Off
+Connections
+Protect it
+You are not the main character
+1 vs 100
+It spreads
+Different perspective
+1 HP
+
+
+guard, wall of sticky notes, faq book
+
+ask, read, attack, north, west, east, south
+
+----
+
+The following is copied from migrations of Realms 1
+
+nullspace: The void from whence we came, and shall return to.
+souls: dropped on death, power nullspace
+health: characters had 1 HP each (unless they absorbed souls iirc?)
+realm: inventory: was a clone / alternative access to characters' inventories
+rooms within realms
+realms had power between 0 and 100
+userland: The chaotic stream of consciousness formed by the denizens who enter. (basically a free-for-all space :P)
+eventstack: Echoes, forgotten notes, an ongoing din of whitenoise. (randomly see events from elsewhere in "reality")
+
+nullspace room 0: You stand in a black void. It is difficult to see your own feet. However, you can clearly see a large [[;yellow;]corkboard] in front of you, and on a [[;yellow;]table] next to it lies a green [[;yellow;]book]. Off to the side, there is a wooden [[;yellow;]dummy].
+corkboard: It is completely empty.
+table: An unremarkable wooden endtable.
+book: It says F.A.Q. on it. (special: picking it up clones it :P)
+dummy: A wooden dummy, designed for practising combat techniques. (try punching the dummy ;P)
+
+room 1: A rocky room with no visible exits. (THIS IS A TRAP MWAHAHAHA)
+ballpeen hammer
+broken pencil: A pencil that has been thoroughly chewed and broken half through the middle. The graphite is missing.
+
+userland room 0: The room is blindingly white. A [[;yellow;]projector] is aimed at the north wall. It flickers between \"Welcome to [[;pink;]userland]!\" and \"Enjoy [[;white;]make]-ing your creations. Don't forget to [[;white;]report] ideas.\"
+projector: It is white and smooth, with the word \"Blusmart\" written on it. There is a picture of a remote drawn on it in black marker.
+sticky notes: A small pad of yellow sticky notes with an attached pencil. (I believe this was supposed to allow you to write notes and stick them ANYWHERE. >:3)
+
+eventstack room 0: An empty room that looks like it once belonged to a hospital. There is a [[;yellow;]filing cabinet] in the center.
+filing cabinet: A dull gray color. You can't seem to get any drawers open.
