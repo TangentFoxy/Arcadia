@@ -20,6 +20,11 @@ guard, wall of sticky notes, faq book
 
 ask, read, attack, north, west, east, south
 
+npcs, death, souls
+
+Monsters. Summoning. Creation of lands? Idk.
+Actually, the first portal should be called userland. People can create rooms that don't exist, giving them a description. Anything that should have interaction, report it and I can add it.
+
 ----
 
 The following is copied from migrations of Realms 1
