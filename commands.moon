@@ -198,11 +198,12 @@ commands = {
     else
       return "Panic now, as this error is impossible, yet has happened."
   inspect: (args) =>   -- [article] [attribute] (name|id)
+    local vessel
     data = parseVessel args
-    vessel = if data.id
-        Vessels\find name: data.name, attribute: data.attribute, id: data.id
-      else
-        Vessels\find name: data.name, attribute: data.attribute, parent: @current.parent
+    if data.id
+      vessel = Vessels\find name: data.name, attribute: data.attribute, id: data.id
+    else
+      vessel = Vessels\find name: data.name, attribute: data.attribute, parent: @current.parent
     if vessel
       -- TODO will display more info in the future
       name = fullName vessel, true
