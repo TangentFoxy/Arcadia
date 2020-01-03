@@ -8,7 +8,7 @@ ENTRYPOINT ["sh", "-c", "lapis migrate production && lapis server production"]
 
 RUN apt-get update
 RUN apt-get upgrade -y
-RUN apt-get install libssl-dev -y
+RUN apt-get install libssl-dev git -y
 
 RUN luarocks install lapis
 #RUN luarocks install moonscript

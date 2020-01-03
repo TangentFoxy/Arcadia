@@ -3,5 +3,5 @@
 set -e # exit on any failure
 
 moonc .
-docker build -t guard13007/realms2:latest .
-docer push guard13007/realms2:latest
+sudo docker build -t guard13007/realms2:latest .
+#docker push guard13007/realms2:latest
