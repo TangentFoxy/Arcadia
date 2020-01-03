@@ -43,14 +43,14 @@ fullName = (vessel, indefinite_article) ->
     else
       result = "a #{result}"
   return result
-listVessels = (vessels) ->
+listVessels = (vessels, possessed, errMsg) ->
   result = ""
   for vessel in *vessels
-    unless vessel.id == @current.id
+    unless vessel.id == possessed
       result ..= ", #{fullName vessel, true}"
   switch #vessels
     when 0, 1 -- zero shouldn't be possible
-      return "There are no other vessels here."
+      return errMsg
     when 2 -- exactly 1 (besides self)
       return "You see #{result\sub 3} here."
     when 3 -- exactly 2
@@ -189,12 +189,12 @@ commands = {
   look: (args) =>      -- [[to] [article] [attribute] (name|id)]
     -- TODO future feature: looking in places besides current location
     if vessels = Vessels\select "WHERE parent = ?", @current.parent
-      return listVessels vessels
+      return listVessels vessels, @current.id, "There are no other vessels here."
     else
       return "Gotta love impossible errors. Initiate procedure 3728-A \"Panic & Crash\" immediately."
   inventory: (args) => -- <no arguments>
     if vessels = Vessels\select "WHERE parent = ?", @current.id
-      return listVessels vessels
+      return listVessels vessels, @current.id, "You are not carrying anything."
     else
       return "Panic now, as this error is impossible, yet has happened."
   inspect: (args) =>   -- [article] [attribute] (name|id)
@@ -207,7 +207,7 @@ commands = {
     if vessel
       -- TODO will display more info in the future
       name = fullName vessel, true
-      return "#{name\sub(1)\upper!}#{name\sub(2)}, ID: #{vessel.id}"
+      return "#{name\sub(1, 1)\upper!}#{name\sub(2)}, ID: #{vessel.id}"
 
   -- learn: (args) => -- [[about] (string)]
 }
@@ -232,14 +232,20 @@ class extends lapis.Application
 
       if @session.id
         @user = Users\find id: @session.id
-        @current = Vessels\find id: @user.vessel_id
+        if @user
+          @current = Vessels\find id: @user.vessel_id
+          return "Something has gone horribly wrong with your account. Please inform me of the error." unless @current
+        else
+          @session.id = nil
         -- TODO "impossible" errors should be automatically converted to messages to 'admin'
-        return "Something has gone horribly wrong with your account. Please inform me of the error." unless (@user and @current)
-      elseif command != "login" or command != "learn"
-        return layout: false, status: 401, "Unauthorized. Please log in first." -- TODO error coloring?
+
+      if not @user and command != "login" and command != "learn"
+        return layout: false, status: 401, "[[;red;]Please log in first.]"
 
       -- TODO make this component recognize and color errors
       --      (by rewriting commands functions to `return nil, err` on error)
       if commands[command]
-        return commands[command](@, args)
+        return layout: false, commands[command](@, args)
+      else
+        return layout: false, status: 400, "[[;red;]Unknown command.]"
   }

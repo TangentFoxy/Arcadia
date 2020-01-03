@@ -1,11 +1,12 @@
 import Model from require "lapis.db.model"
-import trim from require "lapis.util"
 
 class Vessels extends Model
   @constraints: {
     name: (value) =>
-      value = trim value
+      if value\find "%s"
+        return "Vessel names cannot contain spaces."
 
     attribute: (value) =>
-      value = trim value
+      if value\find "%s"
+        return "Vessel attributes cannot contain spaces."
   }

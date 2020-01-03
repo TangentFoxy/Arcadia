@@ -1,13 +1,10 @@
 import Model from require "lapis.db.model"
-import trim from require "lapis.util"
 
 class Users extends Model
   @constraints: {
     name: (value) =>
       if not value or value\len! < 1
         return "You must enter a username."
-
-      value = trim value
 
       if value\find "%s"
         return "Usernames cannot contain spaces."
@@ -20,10 +17,11 @@ class Users extends Model
 
     email: (value) =>
       if value
-        value = trim value
+        if value\find "%s"
+          return "Email addresses cannot contain spaces."
 
-      if value\len! > 0 and Users\find email: value
-        return "That email address is already tied to an account."
+        if value\len! > 0 and Users\find email: value
+          return "That email address is already tied to an account."
   }
 
   @relations: {

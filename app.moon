@@ -5,6 +5,6 @@ class extends lapis.Application
   @include "commands"
 
   handle_error: (err, trace) =>
-    return layout: false, err.."\n\n"..trace
+    return layout: false, status: 500, err.."\n\n"..trace
 
   [index: "/"]: => render: true
