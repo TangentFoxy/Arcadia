@@ -1,5 +1,4 @@
-topics = {
-}
+topics = {}
 
 topics.login = [[
 [[;white;]login username (password) (email)]
@@ -44,6 +43,11 @@ topics.enter = [[
 ]]
 
 -- for name, text in pairs topics
---   topics[name] = text\sub 1, #text - 1 -- remove trailing newline
+--   topics[name] = text\sub 1, -2 -- remove trailing newline
+
+topics.topics = ""
+for name in pairs topics
+  topics.topics ..= "[[;white;]#{name}], "
+topics.topics = topics.topics\sub 1, -3
 
 return topics

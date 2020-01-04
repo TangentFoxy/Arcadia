@@ -66,8 +66,6 @@ listVessels = (vessels, errMsg) ->
       return "You see #{result\sub(3)} here."
 
 commands = {
-  -- IDEA replace login / logout commands with 'account' command for creation, modification, deletion
-  --       minimum top-level commands is what I want, prevents introducing even more account commands later
   -- name by itself is required, () optional, | inclusive or, <> no arguments, "" literal value
   login: (args) =>  -- username (password) (email)
     if user = Users\find name: args[1]
@@ -98,10 +96,15 @@ commands = {
       else
         return nil, "There was an error while attempting to create a new account: #{err}"
   logout: (args) => -- ("--delete")
-    -- TODO implement account deletion
     was_logged_in = @session.id
     @session.id = nil
     if was_logged_in
+      if args[1] == "--delete"
+        success, err = @user\delete!
+        if success
+          return "You have been logged out. Your account has been deleted."
+        else
+          return "You have been logged out. [[;red;]There was an error deleting your account: #{err}]"
       return "You have been logged out."
     else
       return nil, "You are not logged in."
