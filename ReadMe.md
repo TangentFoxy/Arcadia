@@ -1,8 +1,8 @@
 ## dev (near future)
 
-- [ ] implement missing basic commands
-- [ ] show room and stuff in it between commands (maybe?)
-- [ ] help texts!!
+- [x] implement missing basic commands
+- [ ] show parent vessel and vessels within between commands!
+- [x] help texts!!
 - [ ] messaging between users
 - [ ] programming
 - [ ] passive functions
