@@ -1,6 +1,7 @@
 lapis = require "lapis"
 config = require("lapis.config").get!
 bcrypt = require "bcrypt"
+helptext = require "helptext"
 
 import Vessels, Users from require "models"
 import respond_to, json_params from require "lapis.application"
@@ -67,8 +68,8 @@ listVessels = (vessels, errMsg) ->
 commands = {
   -- IDEA replace login / logout commands with 'account' command for creation, modification, deletion
   --       minimum top-level commands is what I want, prevents introducing even more account commands later
-  -- () required, [] optional, | inclusive or, <> no arguments, "" literal value
-  login: (args) =>  -- (username) [password] [email]
+  -- name by itself is required, () optional, | inclusive or, <> no arguments, "" literal value
+  login: (args) =>  -- username (password) (email)
     if user = Users\find name: args[1]
       verified = not user.digest -- automatically verified if they don't have a password :3 yes this is maybe evil
       if user.digest
@@ -96,7 +97,7 @@ commands = {
         return "Welcome #{user.name}! Type 'learn' to learn how to interact with the Realms."
       else
         return nil, "There was an error while attempting to create a new account: #{err}"
-  logout: (args) => -- ["--delete"]
+  logout: (args) => -- ("--delete")
     -- TODO implement account deletion
     was_logged_in = @session.id
     @session.id = nil
@@ -104,9 +105,9 @@ commands = {
       return "You have been logged out."
     else
       return nil, "You are not logged in."
-  -- message: (args) => -- [article] [username|"admin"] (string)
+  -- message: (args) => -- (article) (username|"admin") string
 
-  create: (args) => -- [article] [attribute] (name)
+  create: (args) => -- (article) (attribute) name
     data = parseVessel args
     unless data.name and data.name\len! > 0
       return nil, "Vessels must be named!"
@@ -120,7 +121,7 @@ commands = {
       return "You created #{fullName vessel, true}."
     else
       return nil, "Error: #{err}"
-  become: (args) => -- [article] [attribute] (name|id)
+  become: (args) => -- (article) (attribute) name#id
     data = parseVessel args
     if vessel = Vessels\find name: data.name, attribute: data.attribute, id: data.id, parent: @current.parent
       success, err = @user\update vessel_id: vessel.id
@@ -131,7 +132,7 @@ commands = {
     else
       return nil, "There is no such vessel here."
 
-  -- transform: (args) => -- [article] [attribute]|[(name|id)] [(into) [article] [attribute]|[(name|id)]]
+  -- transform: (args) => -- (article) (attribute)|name#id (into (article) (attribute)|name#id)
   note: (args) =>      -- (string)
     note = table.concat args, " "
     if vessel = Vessels\find id: @current.parent
@@ -144,9 +145,9 @@ commands = {
       -- NOTE should compose a message to admin
       return nil, "Error: A possessed vessel exists with an invalid parent ID."
 
-  -- warp: (args) =>  -- [article] [attribute] (name|id) (to) [article] [attribute] (name|id)
-  -- move: (args) =>  -- [article] [attribute] (name|id) (to) [article] [attribute] (name|id)
-  enter: (args) => -- [article] [attribute] (name|id)
+  -- warp: (args) =>  -- (article) (attribute) name#id preposition (article) (attribute) name#id
+  -- move: (args) =>  -- (article) (attribute) name#id preposition (article) (attribute) name#id
+  enter: (args) => -- (article) (attribute) name#id
     data = parseVessel args
     if vessel = Vessels\find name: data.name, attribute: data.attribute, id: data.id, parent: @current.parent
       success, err = @current\update parent: vessel.id
@@ -167,7 +168,7 @@ commands = {
       -- NOTE should compose a message to admin
       return nil, "Error: A possessed vessel exists with an invalid parent ID."
 
-  take: (args) => -- [article] [attribute] (name|id)
+  take: (args) => -- (article) (attribute) name#id
     data = parseVessel args
     if vessel = Vessels\find name: data.name, attribute: data.attribute, id: data.id, parent: @current.parent
       success, err = vessel\update parent: @current.id
@@ -177,7 +178,7 @@ commands = {
         return nil, "Error: #{err}"
     else
       return nil, "There is no such vessel here."
-  drop: (args) => -- [article] [attribute] (name|id)
+  drop: (args) => -- (article) (attribute) name#id
     data = parseVessel args
     if vessel = Vessels\find name: data.name, attribute: data.attribute, id: data.id, parent: @current.id
       success, err = vessel\update parent: @current.parent
@@ -188,7 +189,7 @@ commands = {
     else
       return nil, "You do not have any such vessel."
 
-  look: (args) =>      -- [[to] [article] [attribute] (name|id)]
+  look: (args) =>      -- (preposition (article) (attribute) name#id)
     -- TODO future feature: looking in places besides current location
     if vessels = Vessels\select "WHERE parent = ?", @current.parent
       list = {}
@@ -205,7 +206,8 @@ commands = {
     else
       -- NOTE should message admin
       return nil, "Error: A selection query didn't return an empty list."
-  inspect: (args) =>   -- [article] [attribute] (name|id)
+  inspect: (args) =>   -- (article) (attribute) name#id
+    -- TODO inspect needs to list data on ALL matching names and attributes using a select query
     local vessel
     data = parseVessel args
     if data.id
@@ -219,7 +221,18 @@ commands = {
     else
       return nil, "There is no such vessel."
 
-  -- learn: (args) => -- [[about] (string)]
+  learn: (args) => -- (about|to) string
+    for about in *{ "about", "to" }
+      if args[1]\lower! == about
+        table.remove args, 1
+        break
+    topic = table.concat args, " "
+    if topic\len! < 1
+      return helptext.learn
+    elseif helptext[topic]
+      return helptext[topic]
+    else
+      return nil, "There is no help for '#{topic}' available."
 }
 -- NOTE the following may be introduced as subcommands of 'account'
 -- whoami or 'who am i' (inspect self basically.. except on user, not vessel!)
