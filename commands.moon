@@ -18,6 +18,7 @@ copy = (tab) ->
   return new
 
 articles = { "a", "an", "the" }
+prepositions = { "in", "into", "to" }
 parseVessel = (args) ->
   local attribute, name, id, article
   words = copy(args)
@@ -27,14 +28,20 @@ parseVessel = (args) ->
       article = table.remove(words, 1)\lower!
       break
   return nil if #words < 1
-  -- TODO support any ??? (just tell caller that 'any' article was removed)
   attribute = table.remove(words, 1)\lower! if #words > 1
   name = table.remove(words, 1)\lower! if #words > 0
   if name
     if index = name\find "#"
       id = tonumber name\sub index + 1
-      name = name\sub 1, index - 1
+      if id
+        name = name\sub 1, index - 1
+        if name\len! < 1
+          name = nil
   return { :attribute, :name, :id, :article }
+getPreposition = (args) ->
+  for i, preposition in ipairs prepositions
+    if args[1]\lower! == preposition
+      return args[1]\lower!, i
 fullName = (vessel, indefinite_article) ->
   result = ""
   result = "#{vessel.attribute} " if vessel.attribute and vessel.attribute\len! > 0
@@ -94,6 +101,7 @@ commands = {
         @session.id = user.id
         return "Welcome #{user.name}! Type 'learn' to learn how to interact with the Realms."
       else
+        -- TODO message admin
         return nil, "There was an error while attempting to create a new account: #{err}"
   logout: (args) => -- ("--delete")
     was_logged_in = @session.id
@@ -104,6 +112,7 @@ commands = {
         if success
           return "You have been logged out. Your account has been deleted."
         else
+          -- TODO send admin message
           return "You have been logged out. [[;red;]There was an error deleting your account: #{err}]"
       return "You have been logged out."
     else
@@ -135,7 +144,55 @@ commands = {
     else
       return nil, "There is no such vessel here."
 
-  -- transform: (args) => -- (article) (attribute)|name#id (into (article) (attribute)|name#id)
+  transform: (args) => -- (article) (attribute|name#id) into (article) (attribute|name)
+    local vessels, i
+    for j, word in ipairs args
+      if word\lower! == "into"
+        i = j
+    unless i
+      return nil, "Invalid transform command."
+    a = {}
+    while i > 1
+      table.insert a, table.remove args, 1
+      i -= 1
+    table.remove args, 1
+    a = parseVessel a
+    data = parseVessel args
+    if a.id
+      vessel = Vessels\find name: a.name, attribute: a.attribute, id: a.id
+      vessels = { vessel }
+    else
+      vessels = Vessels\select "WHERE name = ? AND attribute = ? AND parent = ?", a.name, a.attribute, @current.parent
+    if not vessels or #vessels < 1
+      if a.name and not a.attribute
+        vessels = Vessels\select "WHERE attribute = ? AND parent = ?", a.attribute, @current.parent
+    if not vessels or #vessels < 1
+      return nil, "There are no such vessels to transform."
+    errs = ""
+    unless data.name or data.attribute
+      data.attribute = "" -- must be removing an attribute
+    for vessel in *vessels
+      success, err = vessel\update {
+        attribute: data.attribute
+        name: data.name
+      }
+      unless success
+        errs ..= err .. "\n"
+    local result
+    if data.name
+      if data.attribute and data.attribute\len! > 0
+        result = "You transformed #{a.attribute or a.name} into #{data.attribute} #{data.name}."
+      else
+        result = "You transformed #{a.attribute or a.name} into #{data.name}."
+    else
+      if data.attribute and data.attribute\len! > 0
+        result = "You transformed #{a.attribute} into #{data.attribute}."
+      else
+        result = "You transformed #{a.attribute} into #{data.name}."
+    if #errs > 0
+      return "#{result}[[;red;]However, there were errors: #{errs}]"
+    else
+      return result
   note: (args) =>      -- (string)
     note = table.concat args, " "
     if vessel = Vessels\find id: @current.parent
@@ -148,8 +205,51 @@ commands = {
       -- NOTE should compose a message to admin
       return nil, "Error: A possessed vessel exists with an invalid parent ID."
 
-  -- warp: (args) =>  -- (article) (attribute) name#id preposition (article) (attribute) name#id
-  -- move: (args) =>  -- (article) (attribute) name#id preposition (article) (attribute) name#id
+  warp: (args) =>  -- ((article) (attribute) name#id) preposition (article) (attribute) name#id
+    preposition, i = getPreposition args
+    unless preposition
+      return nil, "Invalid warp command."
+    a = {}
+    while i > 1
+      table.insert a, table.remove args, 1
+      i -= 1
+    table.remove args, 1
+    a = parseVessel a
+    data = parseVessel args
+    vessel = Vessels\find name: a.name, attribute: a.attribute, id: a.id, parent: @current.parent
+    unless vessel
+      if not a.name or a.attribute or a.id
+        vessel = @current
+      else
+        return nil, "There is no such target vessel."
+    if destination = Vessels\find name: data.name, attribute: data.attribute, id: data.id
+      if preposition == "to"
+        vessel.parent = destination.parent
+        return "You warped #{vessel.id != @current.id and "#{fullName vessel, true} "}to #{fullName destination, true}."
+      else
+        vessel.parent = destination.id
+        return "You warped #{vessel.id != @current.id and "#{fullName vessel, true} "}into #{fullName destination, true}."
+    else
+      return nil, "There is no such destination vessel."
+  move: (args) =>  -- (article) (attribute) name#id preposition (article) (attribute) name#id
+    preposition, i = getPreposition args
+    unless preposition
+      return nil, "Invalid move command."
+    a = {}
+    while i > 1
+      table.insert a, table.remove args, 1
+      i -= 1
+    table.remove args, 1
+    a = parseVessel a
+    data = parseVessel args
+    vessel = Vessels\find name: a.name, attribute: a.attribute, id: a.id, parent: @current.parent
+    unless vessel
+      return nil, "There is no such target vessel."
+    if destination = Vessels\find name: data.name, attribute: data.attribute, id: data.id
+      vessel.parent = destination.id
+      return "You moved #{fullName vessel, true} into #{fullName destination, true}."
+    else
+      return nil, "There is no such destination vessel."
   enter: (args) => -- (article) (attribute) name#id
     data = parseVessel args
     if vessel = Vessels\find name: data.name, attribute: data.attribute, id: data.id, parent: @current.parent
@@ -192,13 +292,22 @@ commands = {
     else
       return nil, "You do not have any such vessel."
 
-  look: (args) =>      -- (preposition (article) (attribute) name#id)
-    -- TODO future feature: looking in places besides current location
-    if vessels = Vessels\select "WHERE parent = ?", @current.parent
-      list = {}
-      for vessel in *vessels
-        unless vessel.id == @current.id
-          table.insert list, vessels
+  look: (args) =>      -- ((preposition) (article) (attribute) name#id)
+    local vessels
+    if getPreposition args -- result ignored, but needs to not be present for parseVessel
+      table.remove args, 1
+    if #args > 0
+      data = parseVessel args
+      if vessel = Vessels\find name: data.name, attribute: data.attribute, id: data.id, parent: @current.id
+        vessels = Vessels\select "WHERE parent = ?", vessel.id
+    else
+      vessels = Vessels\select "WHERE parent = ?", @current.parent
+      if vessels
+        for i, vessel in ipairs vessels
+          if vessel.id == @current.id
+            table.remove vessels, i
+            break
+    if vessels
       return listVessels list, "There are no other vessels here."
     else
       -- NOTE should message an admin
@@ -210,21 +319,24 @@ commands = {
       -- NOTE should message admin
       return nil, "Error: A selection query didn't return an empty list."
   inspect: (args) =>   -- (article) (attribute) name#id
-    -- TODO inspect needs to list data on ALL matching names and attributes using a select query
-    local vessel
+    local vessels
     data = parseVessel args
     if data.id
       vessel = Vessels\find name: data.name, attribute: data.attribute, id: data.id
+      vessels = { vessel }
     else
-      vessel = Vessels\find name: data.name, attribute: data.attribute, parent: @current.parent
-    if vessel
-      -- TODO will display more info in the future
+      vessels = Vessels\select "WHERE name = ? AND attribute = ? AND parent = ?", data.name, data.attribute, @current.parent
+    result = ""
+    for vessel in *vessels
+      -- NOTE in future, should display more info
       name = fullName vessel, true
-      return "#{name\sub(1, 1)\upper!}#{name\sub(2)}, ID: #{vessel.id}"
+      result ..= "#{name\sub(1, 1)\upper!}#{name\sub(2)}, ID: #{vessel.id}\n"
+    if result\len! > 0
+      return result\sub 1, -2 -- remove last newline
     else
       return nil, "There is no such vessel."
 
-  learn: (args) => -- (about|to) string
+  learn: (args) => -- ("about"|"to") string
     for about in *{ "about", "to" }
       if args[1]\lower! == about
         table.remove args, 1
@@ -237,13 +349,6 @@ commands = {
     else
       return nil, "There is no help for '#{topic}' available."
 }
--- NOTE the following may be introduced as subcommands of 'account'
--- whoami or 'who am i' (inspect self basically.. except on user, not vessel!)
--- list (admin: list users) (alt: count: users can see how many accounts exist)
--- online (list online users)
--- rename (change your username)
--- chmail (change your email address)
--- chpass (change your password)
 
 class extends lapis.Application
   @path: "/command"
