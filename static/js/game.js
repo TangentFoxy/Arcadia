@@ -4,9 +4,6 @@ $(function() {
 
     term.pause();
 
-    // $.post(location.origin + "/command", { command: command }).then(function(response) {
-    //   term.echo(response, {keepWords: true}).resume()
-    // })
     $.ajax({
       type: "POST",
       url: location.origin + "/command",
