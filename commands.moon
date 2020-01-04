@@ -58,7 +58,7 @@ listVessels = (vessels, errMsg) ->
     result ..= ", #{fullName vessel, true}"
   switch #vessels
     when 0
-      return errMsg
+      return "[[;red;]#{errMsg}]"
     when 1
       return "You see #{result\sub 3} here."
     when 2
@@ -144,11 +144,8 @@ commands = {
     else
       return nil, "There is no such vessel here."
 
-  transform: (args) => -- (article) (attribute|name#id) into (article) (attribute|name)
-    local vessels, i
-    for j, word in ipairs args
-      if word\lower! == "into"
-        i = j
+  transform: (args) => -- (article) (attribute|name#id) preposition (article) (attribute|name)
+    vessels, i = getPreposition args
     unless i
       return nil, "Invalid transform command."
     a = {}
@@ -293,22 +290,29 @@ commands = {
       return nil, "You do not have any such vessel."
 
   look: (args) =>      -- ((preposition) (article) (attribute) name#id)
-    local vessels
+    local vessels, note
     if getPreposition args -- result ignored, but needs to not be present for parseVessel
       table.remove args, 1
     if #args > 0
       data = parseVessel args
       if vessel = Vessels\find name: data.name, attribute: data.attribute, id: data.id, parent: @current.id
+        note = vessel.note
         vessels = Vessels\select "WHERE parent = ?", vessel.id
     else
       vessels = Vessels\select "WHERE parent = ?", @current.parent
+      if vessel = Vessels\find id: @current.parent
+        note = vessel.note
       if vessels
         for i, vessel in ipairs vessels
           if vessel.id == @current.id
             table.remove vessels, i
             break
     if vessels
-      return listVessels list, "There are no other vessels here."
+      message = listVessels list, "There are no other vessels here."
+      if note and note\len! > 0
+        return "#{note}\n#{message}"
+      else
+        return message
     else
       -- NOTE should message an admin
       return nil, "Error: A selection query didn't return an empty list."

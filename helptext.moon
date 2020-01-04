@@ -33,9 +33,10 @@ topics.become = [[
 ]]
 
 topics.transform = [[
-[[;white;]transform] (article) (attribute|name#id) into (article) (attribute|name)
+[[;white;]transform] (article) (attribute|name#id) preposition (article) (attribute|name)
  Transforms one or more vessels' names or attributes.
  Articles (a, an, the) are ignored.
+ Valid prepositions: in, into, to
  Appending "#" and the appropriate vessel id to the name allows you to specify a specific vessel even if two exist with the same name and attribute.
 ]]
 
