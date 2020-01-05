@@ -5,7 +5,7 @@ class extends html.Widget
     html_5 ->
       head -> title "Realms 2"
       body ->
-        script src: @build_url "static/js/jquery-3.2.1.min.js"
+        script src: "static/js/jquery-3.2.1.min.js"
 
         noscript "This game requies JavaScript."
 

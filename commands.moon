@@ -39,6 +39,7 @@ parseVessel = (args) ->
           name = nil
   return { :attribute, :name, :id, :article }
 getPreposition = (args) ->
+  return if #args < 1
   for i, preposition in ipairs prepositions
     if args[1]\lower! == preposition
       return args[1]\lower!, i
@@ -308,7 +309,7 @@ commands = {
             table.remove vessels, i
             break
     if vessels
-      message = listVessels list, "There are no other vessels here."
+      message = listVessels vessels, "There are no other vessels here."
       if note and note\len! > 0
         return "#{note}\n#{message}"
       else
