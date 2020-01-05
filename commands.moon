@@ -364,7 +364,7 @@ class extends lapis.Application
 
     POST: json_params =>
       args = split(@params.command)
-      command = table.remove args, 1
+      command = string.lower table.remove args, 1
 
       if @session.id
         @user = Users\find id: @session.id
