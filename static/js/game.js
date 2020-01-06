@@ -14,7 +14,7 @@ $(function() {
     })
   }, {
     prompt: "> ",
-    greetings: "[[;lime;]Welcome. Type 'learn' to learn about Realms 2, and 'learn to login' when you're ready to make an account.]",
+    greetings: "[[;lime;]Welcome. Type 'learn' and hit enter if you need help.]",
     exit: false,
     historySize: false
   })
