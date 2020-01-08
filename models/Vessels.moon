@@ -10,3 +10,14 @@ class Vessels extends Model
       if value\find "%s"
         return "Vessel attributes cannot contain spaces."
   }
+
+  fullName: (indefinite_article) =>
+    result = ""
+    result = "#{@attribute} " if @attribute and @attribute\len! > 0
+    result ..= @name
+    if indefinite_article
+      if result\sub(1, 1)\find "[AEIOUaeiou]"
+        result = "an #{result}"
+      else
+        result = "a #{result}"
+    return result
