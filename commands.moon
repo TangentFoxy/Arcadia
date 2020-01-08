@@ -119,7 +119,7 @@ commands = {
         return response, err
       when "login"
         if @user = Users\find name: args[1]
-          verified = not user.digest
+          verified = not @user.digest
           if @user.digest
             if bcrypt.verify args[2], @user.digest
               verified = true
