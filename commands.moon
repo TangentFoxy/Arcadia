@@ -255,7 +255,7 @@ commands = {
     return table.concat output, "\n"
   inventory: (args) =>
     vessels = {}
-    for vessel in *@here
+    for vessel in *@inventory
       unless vessel.id == @current.id -- don't see yourself
         table.insert vessels, vessel
     if result = make.list vessels
