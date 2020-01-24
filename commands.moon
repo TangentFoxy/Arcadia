@@ -46,7 +46,7 @@ parse = {
     if preposition = parse.preposition(args)
       table.remove(args, 1)
     b = parse.vessel(args)
-    return { :a, :b, :preposition }
+    return a, b, preposition
 }
 
 local match
@@ -256,7 +256,7 @@ commands = {
   inventory: (args) =>
     vessels = {}
     for vessel in *@inventory
-      unless vessel.id == @current.id -- don't see yourself
+      unless vessel.id == @current.id -- don't see yourself (a paradox)
         table.insert vessels, vessel
     if result = make.list vessels
       return "You are carrying #{result}."
