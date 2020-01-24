@@ -277,17 +277,20 @@ commands = {
     else
       return "You are not carrying anything."
   inspect: (args) =>
-    if data = parse.vessel args
-      result = ""
-      for vessel in *(match.multiple data, @here)
-        name = vessel\fullName true
-        result ..= "#{name\sub(1, 1)\upper!}#{name\sub 2}, ID: #{vessel.id}\n"
-        if vessel.note and #vessel.note > 0
-          result ..= "#{vessel.note}\n"
-      if result\len! > 0
-        return result\sub 1, -2 -- remove last newline
-      return nil, "No such vessel."
-    return nil, "Invalid inspect command."
+    local vessels
+    if #args > 0
+      vessels = match.multiple(parse.vessel(args), @here)
+    else
+      vessels = @here
+    result = ""
+    for vessel in *vessels
+      name = vessel\fullName true
+      result ..= "#{name\sub(1, 1)\upper!}#{name\sub 2}, ID: #{vessel.id}\n"
+      if vessel.note and #vessel.note > 0
+        result ..= "#{vessel.note}\n"
+    if result\len! > 0
+      return result\sub 1, -2 -- remove last newline
+    return nil, "No such vessel."
 
   learn: (args) =>
     if #args > 0
