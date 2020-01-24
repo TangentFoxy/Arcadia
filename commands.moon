@@ -142,6 +142,17 @@ commands = {
         nil, "To be implemented."
       when "email"
         nil, "To be implemented."
+      when "show"
+        local result
+        if @user
+          result = "Logged in as #{@user.name}"
+          if @user.email and @user.email\len! > 0
+            result ..= " (#{@user.email})"
+          if @user.digest
+            result ..= ", password-protected"
+        else
+          result = "Not logged in"
+        return result .. ".\nYou are possessing #{@current\fullName true}."
   -- message: (args) => -- (article) (username|"admin") string
 
   create: (args) =>
