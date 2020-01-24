@@ -31,7 +31,7 @@ parse = {
     return { name: unknown } if #args < 1
     name = table.remove(args, 1)\lower!
     id = tonumber name
-    if id
+    if id and id == math.floor id
       return { :id }
     else
       return { attribute: unknown, name: name }
