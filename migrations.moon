@@ -7,8 +7,8 @@ import create_table, types, add_column from require "lapis.db.schema"
       { "id", types.serial primary_key: true }
       { "name", types.varchar unique: true }
       { "email", types.varchar null: true }
-      { "digest", types.text null: true }
-      { "vessel_id", types.foreign_key null: true }
+      { "digest", types.text null: true } -- this really should have just been varchar
+      { "vessel_id", types.foreign_key null: true } -- this should never be null, why the fuck did I allow it?
     }
     create_table "vessels", {
       { "id", types.serial primary_key: true }
