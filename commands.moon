@@ -195,11 +195,12 @@ commands = {
   warp: (args) =>
     a, b, preposition = parse.complex_command(args)
     return nil, "Invalid warp command." if not preposition
-    if a
+    if a and (a.name or a.id)
       a = match.vessel a, @here
     else
       a = @current
-    return nil, "No such target vessel." unless a
+    unless a
+      return nil, "No such target vessel."
     b = Vessels\find attribute: b.attribute, name: b.name, id: b.id
     if b
       if a == @current
