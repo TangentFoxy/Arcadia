@@ -1,21 +1,86 @@
 topics = {}
 
-topics.login = [[
-[[;white;]login username (password) (email)]
- Creates or logs into an existing account.
- Passwords are optional but recommended.
- Email address is optional and not currently used for anything in the game itself. It may be used to inform the user of updates at a future date.
+topics.basics = [[
+Everything is a vessel. Vessels are named with a single word, and optionally, an attribute (i.e. "black cat" or "frog"). Even you are a vessel. Look around, interact with existing vessels, modify them, or make your own!
 
-New accounts will possess the vessel with id 2. It is recommended you [[;white;]create] a vessel and [[;white;]become] it, or else you may end up sharing the same vessel with others!
+[[;white;]look]: See the vessels around you
+[[;white;]enter <vessel>]: Enter a vessel (i.e. "enter the janitor's closet", "enter teacup")
+[[;white;]leave]: Leave this vessel (the parent vessel, where you are)
+[[;white;]create <vessel>]: Create a vessel (i.e. "create blue dog", "create a clipboard")
+[[;white;]move <vessel> in|into <vessel>]: Move a vessel in another vessel (i.e. "move the dog into a test chamber")
+[[;learn;]learn <topic>]: Learn more stuff ("learn about topics" gives a whole list!)
+
+There is much more, consider "learn about movement" next! There are also "advanced" topics to look at, when you're ready.
 ]]
 
-topics.logout = [[
-[[;white;]logout ("--delete")]
- Logs out of an account.
- If "--delete" is specified, deletes the account.
+topics.movement = [[
+This is mostly about moving YOU (your possessed vessel).
+
+[[;white;]become <vessel>]: Possess another vessel (requires an account)
+[[;white;]account create <name> <password> <email>]: Create an account, password and email are NOT required (you should use a password, or anyone can login as you!)
+[[;white;]account login <name> <password>]: Login to an existing account (there are other account commands, "learn account", shows them all)
+[[;white;]warp in|into <vessel>]: You can warp into any vessel at any time
+[[;white;]warp <vessel> to <vessel>]: You can also warp vessels to each other (note the difference between to and into!)
+
+Want to make and modify vessels? "learn about creation"
+Or carry vessels with you? "learn about inventory"
 ]]
 
--- topics.message
+topics.creation = [[
+The basics of creation and modification: creating, writing notes, and transformation.
+
+[[;white;]create <vessel>]: Create a vessel (i.e. "create the orange", "create gunpowder")
+[[;white;]note <text>]: Place, edit, or remove a note on the parent vessel
+[[;white;]transform <vessel> into|to <vessel>]: Transform (or "rename") vessels (i.e. "transform the cup into a coffee mug")
+[[;white;]transform <attribute> into|to <attribute>]: You can also transform attributes in bulk (i.e. "transform red to blue")
+[[;white;]inspect <vessel>]: Shows a vessel's name, ID, and note (can inspect multiple vessels, or all vessels here)
+
+More capabilities are coming soon: "learn about programming"
+]]
+
+topics.inventory = [[
+[[;white;]inventory]: Show what you're holding
+[[;white;]take <vessel>]: Take a vessel (from the parent vessel) and put it in your inventory
+[[;white;]drop <vessel>]: Drop a vessel from your inventory (into the parent vessel)
+]]
+
+topics.advanced = [[
+Advanced topics:
+- naming: How vessel names and attributes work. Why a name should not be & or an integer.
+- selection: How to type commands to select the correct vessel.
+- structure: The structure of "reality" (What is a paradox? What is 'the parent vessel'?)
+]]
+
+topics.programming = [[
+Not implemented yet!
+
+[[;white;]use <vessel>]: Run a vessel's program
+[[;white;]program <code>]: Add a program to the parent vessel
+[[;white;]trigger <command>]: Add a custom command (i.e. "walk") that will trigger this vessel's program
+[[;white;]passive <code>]: Add a program this vessel will run when in your inventory
+[[;white;]cast <command> with <vessel>]: Run a vessel's program as if another vessel had triggered it
+]]
+
+-- account create|login|logout|delete|rename|password|email|show
+-- become [vessel]
+--
+-- create [vessel]
+-- transform [vessel|attribute] into|to [vessel|attribute]
+-- note [text]
+--
+-- warp [vessel] in|into|to [vessel]
+-- move [vessel] in|into [vessel]
+-- enter [vessel]
+-- leave
+--
+-- take [vessel]
+-- drop [vessel]
+--
+-- look
+-- inventory
+-- inspect [vessel]
+--
+-- learn about|to [topic]
 
 topics.create = [[
 [[;white;]create (article) (attribute) name]

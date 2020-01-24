@@ -300,7 +300,7 @@ commands = {
           break
     topic = table.concat args, " "
     if topic\len! < 1
-      return helptext.learn
+      return helptext.basics
     elseif helptext[topic]
       return helptext[topic]
     else
