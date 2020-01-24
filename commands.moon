@@ -153,6 +153,8 @@ commands = {
         else
           result = "Not logged in"
         return result .. ".\nYou are possessing #{@current\fullName true}."
+      else
+        nil, "Invalid command."
   -- message: (args) => -- (article) (username|"admin") string
 
   create: (args) =>
