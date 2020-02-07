@@ -18,8 +18,7 @@ RUN luarocks install bcrypt
 RUN apt-get autoremove -y
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-COPY . .
-
-# these need to be run in container now because I configured docker hub to automatically build on push
+# actually build stuff!
 RUN luarocks install moonscript
+COPY . .
 RUN moonc .
