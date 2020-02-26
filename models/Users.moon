@@ -12,7 +12,7 @@ class Users extends Model
       if value\lower! == "admin"
         return "That username is unavailable."
 
-      if Users\find name: value
+      if Users\find name: value\lower!
         return "That username is unavailable."
 
     email: (value) =>
