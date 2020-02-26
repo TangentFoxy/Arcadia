@@ -6,13 +6,16 @@ class Users extends Model
       if not value or value\len! < 1
         return "You must enter a username."
 
+      if value\len! > 255
+        return "Usernames must be 255 or fewer characters in length."
+
       if value\find "%s"
         return "Usernames cannot contain spaces."
 
       if value\lower! == "admin"
         return "That username is unavailable."
 
-      if Users\find name: value
+      if Users\find name: value\lower!
         return "That username is unavailable."
 
     email: (value) =>
